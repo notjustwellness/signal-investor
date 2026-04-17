@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>signal — investor memo (v1, 2026-04-17)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* --- PASSWORD GATE --- */
+  #gate { position: fixed; inset: 0; background: #1A1410; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif; color: #F6EFEA; }
+  #gate .gate-overline { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: #AD4236; margin-bottom: 16px; font-weight: 600; }
+  #gate .gate-title { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 96px; color: #AD4236; line-height: 0.9; margin-bottom: 12px; letter-spacing: -2px; }
+  #gate .gate-subtitle { font-size: 14px; opacity: 0.6; margin-bottom: 32px; letter-spacing: 1px; }
+  #gate form { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  #gate input { background: rgba(246,239,234,0.08); border: 1px solid rgba(246,239,234,0.2); border-radius: 6px; color: #F6EFEA; padding: 14px 20px; font-size: 15px; font-family: inherit; width: 280px; text-align: center; letter-spacing: 1px; outline: none; transition: border-color 0.2s; }
+  #gate input:focus { border-color: #AD4236; }
+  #gate button { background: #AD4236; color: #F6EFEA; border: none; border-radius: 6px; padding: 12px 32px; font-size: 12px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+  #gate button:hover { background: #c4574b; }
+  #gate .gate-error { color: #AD4236; font-size: 12px; margin-top: 8px; opacity: 0; transition: opacity 0.2s; letter-spacing: 1px; }
+  #gate .gate-error.show { opacity: 1; }
+  #gate .gate-footer { position: absolute; bottom: 40px; font-size: 10px; opacity: 0.3; letter-spacing: 3px; text-transform: uppercase; }
+  body.locked { overflow: hidden; }
+  body.locked > section { display: none !important; }
+  body.locked .floating-packet { display: none !important; }
+
+  /* Floating packet — cursor-follow ambient across the entire viewport */
+  .floating-packet {
+    position: fixed; top: 0; left: 0; z-index: 100;
+    width: 120px; max-width: 120px; pointer-events: none;
+    filter: drop-shadow(0 12px 36px rgba(0,0,0,0.5));
+    transform: translate(-50%, -50%) translate3d(0, 0, 0);
+    will-change: transform; opacity: 1;
+  }
+  @media (max-width: 768px), (hover: none) { .floating-packet { display: none; } }
+</style>
+<style>
+  /* --- SELF-HOSTED BRAND FONTS --- */
+  @font-face { font-family: 'Anguita Sans'; src: url('fonts/AnguitaSans.otf') format('opentype'); font-weight: 900; font-style: normal; font-display: swap; }
+  @font-face { font-family: 'Bebas Neue'; src: url('fonts/BebasNeue-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; font-display: swap; }
+
+  :root {
+    --signal: #AD4236;
+    --signal-light: #c4574b;
+    --rose-linen: #F6EFEA;
+    --deep-evening: #1A1410;
+    --deep-evening-soft: #2a2420;
+    --font-display: 'Anguita Sans', 'Bebas Neue', Impact, sans-serif;
+    --font-editorial: 'Bebas Neue', 'Anguita Sans', Impact, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: var(--font-body); background: var(--rose-linen); color: var(--deep-evening); line-height: 1.6; -webkit-font-smoothing: antialiased; font-weight: 400; }
+
+  /* Slide counter (top-right on every slide) */
+  .slide-counter { position: absolute; top: 32px; right: 40px; font-family: var(--font-body); font-size: 10px; letter-spacing: 3px; color: var(--signal); opacity: 0.5; text-transform: uppercase; font-weight: 600; z-index: 2; }
+  .slide-dark .slide-counter, .slide-signal .slide-counter { color: var(--rose-linen); opacity: 0.35; }
+
+  .cover { min-height: 100vh; background: var(--deep-evening); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 40px; position: relative; overflow: hidden; }
+  .cover::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(173,66,54,0.15) 0%, transparent 70%); }
+
+  /* Shockwave animation */
+  .shockwaves { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center; }
+  .wave { position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; margin-top: -30px; margin-left: -30px; border: 1.5px solid #e85a4c; border-radius: 50%; opacity: 0; animation: shockwave 9s cubic-bezier(0.2, 0.7, 0.3, 1) infinite; will-change: transform, opacity; box-shadow: 0 0 30px rgba(232,90,76,0.6), inset 0 0 15px rgba(232,90,76,0.3); }
+  .wave-1 { animation-delay: 0s; }
+  .wave-2 { animation-delay: 1.5s; }
+  .wave-3 { animation-delay: 3.0s; }
+  .wave-4 { animation-delay: 4.5s; }
+  .wave-5 { animation-delay: 6.0s; }
+  .wave-6 { animation-delay: 7.5s; }
+  @keyframes shockwave {
+    0% { transform: scale(0.2); opacity: 0; border-width: 2px; }
+    8% { opacity: 0.85; }
+    100% { transform: scale(28); opacity: 0; border-width: 0.5px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wave { display: none; } }
+  @media print { .shockwaves { display: none !important; } }
+
+  .cover-overline { font-family: var(--font-body); font-size: 18px; color: var(--rose-linen); font-weight: 300; letter-spacing: 2px; opacity: 0.75; margin-bottom: 8px; position: relative; z-index: 1; text-transform: lowercase; }
+  .cover h1 { font-family: var(--font-display); font-size: 140px; font-weight: 900; color: var(--signal); letter-spacing: -2px; line-height: 0.9; position: relative; z-index: 1; text-transform: lowercase; }
+  .cover .tagline { font-family: var(--font-body); font-size: 20px; color: var(--rose-linen); margin-top: 16px; font-weight: 300; letter-spacing: 2px; opacity: 0.85; position: relative; z-index: 1; text-transform: lowercase; }
+  .cover .memo-line { font-family: var(--font-body); font-size: 13px; color: rgba(246,239,234,0.55); margin-top: 40px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase; position: relative; z-index: 1; }
+  .cover .company { font-family: var(--font-body); position: absolute; bottom: 40px; font-size: 11px; color: rgba(246,239,234,0.4); letter-spacing: 4px; text-transform: uppercase; font-weight: 500; display: flex; align-items: center; gap: 10px; z-index: 1; }
+  .insdr-logo-light { height: 12px; opacity: 0.6; }
+
+  .slide { min-height: 100vh; padding: 80px 60px; display: flex; flex-direction: column; justify-content: center; max-width: 1200px; margin: 0 auto; page-break-before: always; position: relative; }
+  .slide-dark { background: var(--deep-evening); color: var(--rose-linen); max-width: none; padding: 80px 10%; }
+  .slide-signal { background: var(--signal); color: var(--rose-linen); max-width: none; padding: 80px 10%; }
+
+  .section-label { font-family: var(--font-body); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--signal); margin-bottom: 16px; font-weight: 600; }
+  .slide-dark .section-label, .slide-signal .section-label { color: rgba(246,239,234,0.5); }
+  .slide h2 { font-family: var(--font-display); font-size: 56px; font-weight: 900; line-height: 1.05; margin-bottom: 32px; letter-spacing: -1px; text-transform: lowercase; }
+  .slide h3 { font-family: var(--font-display); font-size: 32px; font-weight: 900; margin-bottom: 20px; margin-top: 40px; letter-spacing: -0.5px; text-transform: lowercase; }
+  .slide p { font-family: var(--font-body); font-size: 17px; line-height: 1.7; margin-bottom: 20px; max-width: 860px; font-weight: 400; }
+  .slide-dark p, .slide-signal p { opacity: 0.9; }
+  .highlight { color: var(--signal); font-weight: 500; }
+  .slide-dark .highlight, .slide-signal .highlight { color: #fff; font-weight: 500; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin: 32px 0; }
+  .card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 20px rgba(26,20,16,0.06); }
+  .slide-dark .card { background: var(--deep-evening-soft); box-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+  .card .card-label { font-family: var(--font-body); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--signal); margin-bottom: 8px; font-weight: 700; }
+  .card h4 { font-family: var(--font-display); font-size: 22px; font-weight: 900; margin-bottom: 12px; letter-spacing: -0.3px; text-transform: lowercase; line-height: 1.1; }
+  .card p { font-family: var(--font-body); font-size: 15px; line-height: 1.6; opacity: 0.8; font-weight: 400; }
+
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 15px; font-family: var(--font-body); }
+  th { font-family: var(--font-body); text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--signal); font-weight: 700; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--signal); }
+  td { padding: 12px 16px; border-bottom: 1px solid rgba(26,20,16,0.08); vertical-align: top; }
+  .slide-dark th { border-bottom-color: var(--signal); color: var(--signal-light); }
+  .slide-dark td { border-bottom-color: rgba(246,239,234,0.08); }
+
+  .big-stat { font-family: var(--font-display); font-size: 88px; font-weight: 900; line-height: 0.95; letter-spacing: -2px; color: var(--signal); text-transform: lowercase; }
+  .slide-dark .big-stat, .slide-signal .big-stat { color: var(--rose-linen); }
+  .big-stat-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--signal); opacity: 0.7; font-weight: 600; margin-bottom: 8px; }
+  .slide-dark .big-stat-label, .slide-signal .big-stat-label { color: rgba(246,239,234,0.6); }
+
+  /* Platform grid (slide 09) */
+  .sku-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin: 32px 0; }
+  .sku-cell { background: var(--deep-evening-soft); border-radius: 10px; overflow: hidden; aspect-ratio: 1 / 1.1; position: relative; display: flex; flex-direction: column; justify-content: flex-end; }
+  .sku-cell img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.85; }
+  .sku-cell .sku-meta { position: relative; z-index: 1; padding: 14px; background: linear-gradient(to top, rgba(26,20,16,0.92) 0%, rgba(26,20,16,0) 100%); }
+  .sku-cell .sku-name { font-family: var(--font-display); font-size: 22px; font-weight: 900; text-transform: lowercase; letter-spacing: -0.5px; color: var(--rose-linen); line-height: 1; }
+  .sku-cell .sku-role { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(246,239,234,0.7); margin-top: 4px; font-weight: 600; }
+  .sku-cell.launch { outline: 2px solid var(--signal); }
+  .sku-cell.launch .sku-badge { position: absolute; top: 10px; right: 10px; background: var(--signal); color: var(--rose-linen); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; font-weight: 700; z-index: 2; }
+
+  /* Exit comp row */
+  .exit-comp { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin: 32px 0; }
+  .exit-comp .exit-card { background: white; border-radius: 12px; padding: 28px; border-top: 4px solid var(--signal); }
+  .slide-dark .exit-comp .exit-card { background: var(--deep-evening-soft); }
+  .exit-comp .exit-brand { font-family: var(--font-display); font-size: 26px; font-weight: 900; text-transform: lowercase; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .exit-comp .exit-price { font-family: var(--font-display); font-size: 36px; font-weight: 900; color: var(--signal); text-transform: lowercase; letter-spacing: -1px; }
+  .slide-dark .exit-comp .exit-price { color: var(--signal-light); }
+  .exit-comp .exit-note { font-size: 13px; opacity: 0.75; margin-top: 8px; line-height: 1.5; }
+
+  /* Vanness-specific box on the ask slide */
+  .vanness-box { background: var(--deep-evening); color: var(--rose-linen); padding: 40px; border-radius: 14px; margin: 32px 0; border-left: 6px solid var(--signal); }
+  .vanness-box .vanness-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--signal-light); font-weight: 700; margin-bottom: 16px; }
+  .vanness-box h4 { font-family: var(--font-display); font-size: 34px; font-weight: 900; text-transform: lowercase; letter-spacing: -0.5px; margin-bottom: 20px; color: var(--rose-linen); line-height: 1.1; }
+  .vanness-box p { color: rgba(246,239,234,0.9); font-size: 16px; line-height: 1.7; max-width: none; }
+  .vanness-box .signature-line { margin-top: 28px; font-family: var(--font-display); font-size: 26px; color: var(--signal-light); text-transform: lowercase; letter-spacing: -0.5px; font-weight: 900; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px; }
+    .cover h1 { font-size: 56px; }
+    .slide h2 { font-size: 32px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .sku-grid { grid-template-columns: repeat(2, 1fr); }
+    .exit-comp { grid-template-columns: 1fr; }
+    .big-stat { font-size: 56px; }
+  }
+</style>
+</head>
+<body class="locked">
+
+<!-- ==================== PASSWORD GATE ==================== -->
+<div id="gate">
+  <div class="gate-overline">INSDR Wellness Co. &mdash; Investor Memo &middot; Confidential</div>
+  <div class="gate-title" aria-label="signal"><span style="color: #F6EFEA;">/</span>sɪɡ<span style="color: #F6EFEA;">ˈ</span>nɑ<span style="color: #F6EFEA;">ː</span>l<span style="color: #F6EFEA;">/</span></div>
+  <div class="gate-subtitle">Enter password to view.</div>
+  <form onsubmit="return checkPass(event)">
+    <input type="password" id="gate-pass" autocomplete="off" autofocus placeholder="password">
+    <button type="submit">Enter</button>
+    <div class="gate-error" id="gate-error">Incorrect. Try again.</div>
+  </form>
+  <div class="gate-footer">Do not share.</div>
+</div>
+
+<script>
+  (function() {
+    var PASS = "5-4-3-2-1";
+    var gate = document.getElementById("gate");
+    var body = document.body;
+    if (sessionStorage.getItem("signal_investor_unlocked") === "true") {
+      gate.style.display = "none";
+      body.classList.remove("locked");
+    }
+    window.checkPass = function(e) {
+      e.preventDefault();
+      var input = document.getElementById("gate-pass").value;
+      var err = document.getElementById("gate-error");
+      if (input === PASS) {
+        sessionStorage.setItem("signal_investor_unlocked", "true");
+        gate.style.display = "none";
+        body.classList.remove("locked");
+      } else {
+        err.classList.add("show");
+        document.getElementById("gate-pass").value = "";
+        document.getElementById("gate-pass").focus();
+        setTimeout(function(){ err.classList.remove("show"); }, 2400);
+      }
+      return false;
+    };
+  })();
+</script>
+
+
+<!-- ==================== 01 • COVER ==================== -->
+<section class="cover">
+  <div class="shockwaves" aria-hidden="true">
+    <div class="wave wave-1"></div>
+    <div class="wave wave-2"></div>
+    <div class="wave wave-3"></div>
+    <div class="wave wave-4"></div>
+    <div class="wave wave-5"></div>
+    <div class="wave wave-6"></div>
+  </div>
+  <div class="cover-overline">send the right</div>
+  <h1 aria-label="signal" style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 100px; letter-spacing: -3px;"><span style="color: var(--rose-linen);">/</span>sɪɡ<span style="color: var(--rose-linen);">ˈ</span>nɑ<span style="color: var(--rose-linen);">ː</span>l<span style="color: var(--rose-linen);">/</span></h1>
+  <div class="tagline">the chew that fuels every cell.</div>
+  <div class="memo-line">investor memo &middot; v1 &middot; april 2026</div>
+  <div class="company"><img src="logo/insdr_logo_light.png" alt="INSDR" class="insdr-logo-light"> Wellness Co. &nbsp;&middot;&nbsp; prepared for select investors</div>
+</section>
+
+
+<!-- ==================== 02 • THE OPPORTUNITY ==================== -->
+<section class="slide">
+  <div class="slide-counter">02 / 12</div>
+  <div class="section-label">The Opportunity</div>
+  <h2>Unilever just paid <span class="highlight">$1.2 billion</span> for a packet of gummies.</h2>
+  <p>In April 2026, Unilever acquired Grüns &mdash; a daily-gummy greens brand, four years old, packet-in-container format, subscription-DTC &mdash; for $1.2 billion. Unilever had spent the previous year divesting its food division to re-focus roughly two-thirds of revenue on beauty and personal care. The Grüns deal wasn't a food acquisition. It was the first beauty-coded ingestible acquisition at scale, and it set the comp.</p>
+  <p>Two strategic signals landed at once:</p>
+  <p style="margin-top: 8px;"><strong>(1) The format is validated.</strong> A dissolvable daily serving + single-serve packet + container-as-ritual, priced at a premium and sold on habit &mdash; that architecture is now worth $1.2B when executed against a habit metric (Grüns: 80% daily-use, 85K verified reviews).</p>
+  <p><strong>(2) The category is wide open.</strong> Grüns won the greens lane. Liquid IV won hydration. Vital Proteins won collagen. <span class="highlight">No one has won the beauty-from-within lane with a format-led brand.</span> That lane is $8B+, growing 12% annually, and its largest incumbent (collagen powder) is a declining behavior &mdash; the buyer is looking for the next format.</p>
+
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 40px;">
+    <div class="card">
+      <div class="card-label">The comp</div>
+      <h4>grüns &rarr; unilever</h4>
+      <p>$1.2B in 4 years. Greens + daily packet format. Habit-metric company: 80% daily-use, 85K verified reviews. Unilever paid for the behavior, not the blend.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">The buyer's shift</div>
+      <h4>food out. beauty in.</h4>
+      <p>Unilever divested food in 2025. Beauty &amp; personal care now targets ~2/3 of forward revenue. Beauty-from-within sits at the intersection of their two strongest growth bets: premium beauty + ingestibles.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">The open lane</div>
+      <h4>beauty-from-within</h4>
+      <p>$8B+, growing 12%. No format-led winner. Collagen powder is declining. 30&ndash;44 women are now 42% of buyers. The biggest unclaimed adjacency to the category Unilever just bought into.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; font-family: var(--font-display); font-size: 36px; line-height: 1.1; color: var(--signal); font-weight: 900; letter-spacing: -1px; text-transform: lowercase; max-width: 900px;">signal is the beauty-from-within answer to what grüns proved in greens &mdash; and we're the first ones here.</p>
+</section>
+
+
+<!-- ==================== 03 • THE MARKET GAP ==================== -->
+<section class="slide slide-dark">
+  <div class="slide-counter" style="color: var(--rose-linen);">03 / 12</div>
+  <div class="section-label">The Market Gap</div>
+  <h2>She wasn't missing ingredients. <span class="highlight">She was missing energy.</span></h2>
+  <p style="max-width: 900px;">The target buyer &mdash; a 30&ndash;44 woman investing in her long-term look &mdash; is already stacking supplements. Collagen in her coffee. An electrolyte stick. A beauty gummy. A greens multi. Four to five products a day, $7.50&ndash;$9.80 on her shelf. She's never sure what any of it is doing. She keeps buying because she hasn't found the thing that works. She keeps switching because nothing feels like a category answer.</p>
+
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 40px;">
+    <div class="card">
+      <div class="card-label">01 &middot; her shelf</div>
+      <h4>is full.</h4>
+      <p>Collagen, HA, B-vitamins, electrolytes, probiotics. Raw materials everywhere. The ingredients aren't the problem &mdash; she's already invested in them.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">02 &middot; her cells</div>
+      <h4>are the bottleneck.</h4>
+      <p>Without the energy to use what she's giving them, her cells are running on substrate alone. She's feeding a machine that can't fully run. Every supplement she takes asks her cells to do work they don't have the ATP for.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">03 &middot; signal</div>
+      <h4>is the missing input.</h4>
+      <p>A clinical-dose chew that protects the mitochondrial membrane (where ATP is made) and supplies the substrates her cells need to do the visible work. One chew. 90 seconds. Every day.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 40px; max-width: 860px;">The strategic consequence: signal is <strong>additive</strong> to her existing stack, not a replacement. She doesn't have to drop her collagen to add us &mdash; signal supports the cells her collagen is asking to do the work. That's the cleanest possible acquisition message in a category where every new brand is pitched as "better than the one you have."</p>
+</section>
+
+
+<!-- ==================== 04 • THE SOLUTION ==================== -->
+<section class="slide">
+  <div class="slide-counter">04 / 12</div>
+  <div class="section-label">The Solution</div>
+  <h2>A cellular energy keystone. <span class="highlight">Plus the substrates she came for.</span></h2>
+  <p>signal's launch SKU is a dissolvable chew with a clinical-dose formulation built on two layers: <strong>(1)</strong> a mitochondrial-protection keystone present in every SKU we will ever ship, and <strong>(2)</strong> the substrates the energized cells use to deliver the visible outcome. In the launch SKU, that visible outcome is skin hydration and structure.</p>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top: 40px;">
+    <div class="card">
+      <div class="card-label">Keystone &middot; 4mg / day &middot; in ALL 8 SKUs</div>
+      <h4>Astaxanthin</h4>
+      <p>One of the most-studied protectors of mitochondrial membranes. Crosses the blood-brain barrier and blood-retinal barrier. Concentrates in the lipid bilayers where ATP is produced. The single ingredient most directly tied to the cellular energy thesis &mdash; and it appears at the same 4mg dose in every future SKU. That uniformity is the platform claim.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Substrate &middot; 120 mg / day</div>
+      <h4>Hyaluronic Acid</h4>
+      <p>The raw material her skin cells use to build the dermal water reservoir &mdash; once they have the energy to do it. Low molecular weight, the exact dose used in the human RCTs (Oe 2017, Kawada 2014, Gao 2022 meta) that proved oral HA improves skin hydration.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Substrate &middot; 40 mg / day</div>
+      <h4>Phytoceramides</h4>
+      <p>The raw material for the skin's barrier lipids. Rice-derived, gluten-free. Multiple placebo-controlled RCTs (Guillou 2011, Bizot 2017) at this dose show reduced transepidermal water loss and improved hydration.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Cofactors &middot; 100% DV</div>
+      <h4>Vitamins C, E, Zn, Se</h4>
+      <p>Vitamin E protects mitochondrial lipids from oxidation. Vitamin C is a cofactor for ATP-adjacent enzymatic reactions. Zinc and selenium support antioxidant defense of the energy production machinery. Inexpensive ingredients; non-negotiable architecture.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px;"><strong>Claim discipline.</strong> signal does not claim to "treat mitochondrial dysfunction" or "reverse cellular aging." The launch SKU's outcome target is skin hydration (corneometry, TEWL) measured in the budgeted pilot study (M3&ndash;M9). Every dose is the dose that was studied. Every claim has its receipt in the full concept deck appendices.</p>
+</section>
+
+
+<!-- ==================== 05 • WHY SHE STAYS ==================== -->
+<section class="slide slide-signal">
+  <div class="slide-counter" style="color: var(--rose-linen);">05 / 12</div>
+  <div class="section-label">Retention &middot; The Habit Mechanism</div>
+  <h2 style="color: var(--rose-linen);">The first supplement you <span class="highlight">actually look forward to taking.</span></h2>
+  <p style="max-width: 900px;">Beauty-from-within is a retention business. The category loses 60&ndash;70% of buyers by day 60 &mdash; pills endured, powders choked, gummies regressed to candy. Grüns won on 80% daily-use. That's the metric Unilever paid $1.2B for, and it's the single number we optimize for. Four things, working together, make the daily act something she repeats.</p>
+
+  <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 40px;">
+    <div class="card" style="background: var(--deep-evening); color: var(--rose-linen);">
+      <div class="card-label" style="color: var(--signal-light);">01 &middot; the time</div>
+      <h4 style="color: var(--rose-linen);">90 seconds.</h4>
+      <p style="color: rgba(246,239,234,0.85);">Tear, chew, taste, dissolve. Shorter than brushing your teeth. Long enough to feel like its own moment.</p>
+    </div>
+    <div class="card" style="background: var(--deep-evening); color: var(--rose-linen);">
+      <div class="card-label" style="color: var(--signal-light);">02 &middot; the chemistry</div>
+      <h4 style="color: var(--rose-linen);">both chemistries, one chew.</h4>
+      <p style="color: rgba(246,239,234,0.85);">Chew matrix carries water-soluble actives (HA, vitamins). MCT liquid center carries fat-soluble actives (astaxanthin, CoQ10). One format, no pill-and-powder stack.</p>
+    </div>
+    <div class="card" style="background: var(--deep-evening); color: var(--rose-linen);">
+      <div class="card-label" style="color: var(--signal-light);">03 &middot; the form</div>
+      <h4 style="color: var(--rose-linen);">built for the moment.</h4>
+      <p style="color: rgba(246,239,234,0.85);">Hard shell, progressive dissolve, liquid-center flavor burst at ten seconds. Designed around the act of eating it, not around getting it down.</p>
+    </div>
+    <div class="card" style="background: var(--deep-evening); color: var(--rose-linen);">
+      <div class="card-label" style="color: var(--signal-light);">04 &middot; the unlock</div>
+      <h4 style="color: var(--rose-linen);">no longer a chore.</h4>
+      <p style="color: rgba(246,239,234,0.85);">Pleasure delivers consistency. Consistency delivers outcomes. That inversion is the whole mechanism &mdash; not a slogan.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; max-width: 860px;"><strong>The milestone gate (M5&ndash;M8):</strong> 70%+ daily-use rate by month 3 of beta. If the chew isn't trending toward that number, the format or ritual is failing and gets reworked before scale spend. This is the one metric that decides whether signal becomes a category brand or a pretty SKU.</p>
+</section>
+
+
+<!-- ==================== 06 • THE FORMAT ==================== -->
+<section class="slide">
+  <div class="slide-counter">06 / 12</div>
+  <div class="section-label">The Format</div>
+  <h2>A chew. A packet. <span class="highlight">A container.</span></h2>
+  <p>Nothing like this exists in the longevity-adjacent beauty category. A dissolvable chew with a liquid-center flavor burst, tear-open packet with clear PET window, 60-packet container. The format is the moat &mdash; a supplement that reads as a product, not a regimen.</p>
+
+  <div class="card-grid" style="grid-template-columns: repeat(3, 1fr); margin-top: 40px;">
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div style="display: flex; height: 240px;">
+        <img src="signal_packet.png" alt="signal packet front" style="width: 50%; height: 240px; object-fit: cover; display: block;">
+        <img src="signal_packet_back.png" alt="signal packet back" style="width: 50%; height: 240px; object-fit: cover; display: block;">
+      </div>
+      <div style="padding: 24px;">
+        <div class="card-label">The Packet</div>
+        <h4>matte front. clear back.</h4>
+        <p>4 chews per packet. 1 packet = 1 serving. Laser-scored V-notch for clean tear. The clear PET back reveals the chews before you open it &mdash; the ritual starts at the packet.</p>
+      </div>
+    </div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <img src="signal_chew.jpg" alt="signal chew" style="width: 100%; height: 240px; object-fit: cover; display: block;">
+      <div style="padding: 24px;">
+        <div class="card-label">The Chew</div>
+        <h4>dissolvable. 90 seconds.</h4>
+        <p>Xylitol shell, progressive dissolve, liquid-center flavor burst at ~10 seconds. The taste moment is the sensory receipt &mdash; something is happening, every time she chews.</p>
+      </div>
+    </div>
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <img src="signal_container.jpg" alt="signal container" style="width: 100%; height: 240px; object-fit: cover; display: block;">
+      <div style="padding: 24px;">
+        <div class="card-label">The Container</div>
+        <h4>60 packets. two months.</h4>
+        <p>Deep Evening primary box. Recyclable paperboard, foil-stamped wordmark. Premium unboxing, no plastic clamshell. Ships every two months.</p>
+      </div>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px;"><span class="highlight">Grüns proved the packet-in-container architecture is worth $1.2B.</span> signal applies the same daily-packet ritual to a different category &mdash; longevity-adjacent beauty &mdash; with a format the category has never seen before.</p>
+</section>
+
+
+<!-- ==================== 07 • THE MOAT + EXIT THESIS ==================== -->
+<section class="slide slide-dark">
+  <div class="slide-counter" style="color: var(--rose-linen);">07 / 12</div>
+  <div class="section-label">The Moat + Exit Thesis</div>
+  <h2>Any single layer is copyable. <span class="highlight">The stack is not.</span></h2>
+  <p>signal's defensibility is a stack of eight layers. One of them is a thesis no other beauty-from-within brand has claimed: cellular energy as the platform foundation. By the time competitors react, signal has exclusive partnerships, narrative ownership, and a multi-SKU architecture they can't retroactively unify.</p>
+
+  <table style="margin-top: 32px;">
+    <tr><th>#</th><th>Layer</th><th>Time to replicate</th></tr>
+    <tr><td><strong>01</strong></td><td><strong>Format</strong> &mdash; dissolvable chew + liquid-center burst + single-serve packet</td><td>12&ndash;18 months</td></tr>
+    <tr><td><strong>02</strong></td><td><strong>Energy thesis</strong> &mdash; cellular energy as platform foundation. No other beauty-from-within brand has claimed this.</td><td><strong>Uncopyable in narrative</strong></td></tr>
+    <tr><td><strong>03</strong></td><td><strong>Formulation architecture</strong> &mdash; astaxanthin 4mg as uniform mitochondrial keystone across all 8 SKUs. "Every signal has a mitochondrial protector" is a platform claim.</td><td>Architecture-as-narrative belongs to first mover</td></tr>
+    <tr><td><strong>04</strong></td><td><strong>Sensory ritual</strong> &mdash; 90-second multi-sensory experience with felt-feedback receipt</td><td>Impossible without format change</td></tr>
+    <tr><td><strong>05</strong></td><td><strong>Celebrity cap table</strong> &mdash; Vanness Wu + Asia audience reach</td><td><strong>Uncopyable</strong></td></tr>
+    <tr><td><strong>06</strong></td><td><strong>First-mover partnerships</strong> &mdash; longevity-adjacent (Mitopure, Novos, Ritual) + electrolyte-adjacent (LMNT, Hydrant) co-marketing</td><td>Contractually locked 12&ndash;24 months</td></tr>
+    <tr><td><strong>07</strong></td><td><strong>Platform architecture</strong> &mdash; 8 SKUs, 8 cell types, ONE biological foundation</td><td>12&ndash;24 months &mdash; can't be retroactively unified</td></tr>
+    <tr><td><strong>08</strong></td><td><strong>Asia distribution</strong> &mdash; cross-border e-commerce via Vanness's network + Frank's GNC Taiwan category expertise</td><td><strong>Uncopyable</strong></td></tr>
+  </table>
+
+  <h3 style="margin-top: 48px;">The exit thesis</h3>
+  <p>Ingestible-brand acquisitions in the last 36 months establish a clear playbook. Strategic buyers pay for habit-metric brands in premium categories with format differentiation and platform potential. signal sits in the next open adjacency &mdash; beauty-from-within &mdash; with a format Unilever has already validated in greens.</p>
+
+  <div class="exit-comp">
+    <div class="exit-card">
+      <div class="exit-brand">grüns</div>
+      <div class="exit-price">$1.2B</div>
+      <div class="exit-note">Acquired by Unilever, April 2026. Format: daily greens gummy, packet-in-container. Habit-metric company. 4 years to exit.</div>
+    </div>
+    <div class="exit-card">
+      <div class="exit-brand">liquid i.v.</div>
+      <div class="exit-price">~$500M+</div>
+      <div class="exit-note">Acquired by Unilever, 2020. Format: hydration stick packet. Habit + daily ritual category leader. Stick-pack precedent in the same architecture.</div>
+    </div>
+    <div class="exit-card">
+      <div class="exit-brand">vital proteins</div>
+      <div class="exit-price">Nestlé</div>
+      <div class="exit-note">Acquired by Nestlé, 2020. Collagen category leader. Format: powder. Proves beauty-ingestible is a strategic-acquirer category even without format innovation.</div>
+    </div>
+  </div>
+
+  <p style="margin-top: 24px;"><span class="highlight">Positioning matters at exit.</span> Longevity-adjacent brands trade at higher multiples than beauty-only brands. signal's cellular energy thesis is not just differentiation &mdash; it's multiple expansion.</p>
+</section>
+
+
+<!-- ==================== 08 • THE MARKET ==================== -->
+<section class="slide">
+  <div class="slide-counter">08 / 12</div>
+  <div class="section-label">The Market</div>
+  <h2>A category that doesn't exist yet, <span class="highlight">at the intersection of three that do.</span></h2>
+  <p>signal sits at the overlap of three already-massive markets, claiming a category position none of them currently occupies: <strong>cellular-energy-led beauty-from-within.</strong></p>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top: 32px;">
+    <div class="card">
+      <div class="card-label">Market One</div>
+      <h4>Beauty-from-within</h4>
+      <div class="big-stat-label" style="margin-top: 8px;">TAM</div>
+      <div class="big-stat">$8B+</div>
+      <p style="margin-top: 12px;">Growing 12% annually. 30&ndash;44 women now 42% of buyers (up from 35% in 2020). HUM, Lemme, Ritual, Vital Proteins. None has claimed energy as the foundation.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Market Two</div>
+      <h4>Longevity supplements</h4>
+      <div class="big-stat-label" style="margin-top: 8px;">TAM</div>
+      <div class="big-stat">$50B+</div>
+      <p style="margin-top: 12px;">NAD+ precursors, urolithin A, CoQ10, NMN, NR. Comp set: Novos, Tru Niagen, Timeline, Pendulum. Mostly capsule, mostly biohacker-coded. <strong>No female-targeted brand owns this lane.</strong></p>
+    </div>
+    <div class="card">
+      <div class="card-label">Market Three</div>
+      <h4>Aesthetic procedures</h4>
+      <div class="big-stat-label" style="margin-top: 8px;">TAM</div>
+      <div class="big-stat">$8B+</div>
+      <p style="margin-top: 12px;">Botox, filler, microneedling, lasers. Patients spending $500&ndash;$2000 per visit, asking "what do I take to protect the investment?" signal is the natural ingestible companion.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top: 48px;">Why now</h3>
+  <p>Cellular energy is the trade-press wave of 2026. NutraIngredients, BeautyMatter, Vogue Scandinavia, and Glossy have all run "cellular health" or "inside-out beauty" framings in the last six months. The phrase is dominant in 2026 trade press but no consumer brand has claimed it yet. Freaks of Nature launched hybrid in March 2026 &mdash; signal has a 6&ndash;9 month window to plant the flag at the convergence point of three markets and a cultural moment.</p>
+</section>
+
+
+<!-- ==================== 09 • THE PLATFORM ==================== -->
+<section class="slide slide-dark">
+  <div class="slide-counter" style="color: var(--rose-linen);">09 / 12</div>
+  <div class="section-label">The Platform</div>
+  <h2>One biology. <span class="highlight">Eight cell types.</span></h2>
+  <p>signal launches as one SKU &mdash; glow &mdash; and scales into a platform of eight. Every SKU shares the same mitochondrial keystone (astaxanthin 4mg) and layers cell-type-specific substrates on top. That architecture is what makes signal a category brand instead of a line extension story.</p>
+
+  <div class="sku-grid" style="margin-top: 40px;">
+    <div class="sku-cell launch">
+      <div class="sku-badge">Launch</div>
+      <img src="sku_images/glow.jpg" alt="signal glow">
+      <div class="sku-meta">
+        <div class="sku-name">glow</div>
+        <div class="sku-role">skin cells</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/rise.jpg" alt="signal rise">
+      <div class="sku-meta">
+        <div class="sku-name">rise</div>
+        <div class="sku-role">circadian</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/rest.jpg" alt="signal rest">
+      <div class="sku-meta">
+        <div class="sku-name">rest</div>
+        <div class="sku-role">nervous system</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/surge.jpg" alt="signal surge">
+      <div class="sku-meta">
+        <div class="sku-name">surge</div>
+        <div class="sku-role">muscle cells</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/edge.jpg" alt="signal edge">
+      <div class="sku-meta">
+        <div class="sku-name">edge</div>
+        <div class="sku-role">cognition</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/still.jpg" alt="signal still">
+      <div class="sku-meta">
+        <div class="sku-name">still</div>
+        <div class="sku-role">hormonal</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/guard.jpg" alt="signal guard">
+      <div class="sku-meta">
+        <div class="sku-name">guard</div>
+        <div class="sku-role">gut barrier</div>
+      </div>
+    </div>
+    <div class="sku-cell">
+      <img src="sku_images/move.jpg" alt="signal move">
+      <div class="sku-meta">
+        <div class="sku-name">move</div>
+        <div class="sku-role">joint cells</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top: 32px;">
+    <div class="card">
+      <div class="card-label">Horizon 1 &middot; Months 0&ndash;12</div>
+      <h4>The Wedge</h4>
+      <p>signal (glow). One launch SKU expressing the energy thesis through skin &mdash; the most visible cell type and the biggest addressable market. The wedge gets us noticed and converts the beauty buyer.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Horizon 2 &middot; Month 12+</div>
+      <h4>The Platform</h4>
+      <p>Seven additional SKUs, each a different expression of the same biology in a different tissue. The platform unifies under one thesis no competitor can retroactively claim &mdash; and this is what makes the brand strategic-acquirer-legible.</p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ==================== 10 • BUSINESS MODEL + UNIT ECONOMICS ==================== -->
+<section class="slide">
+  <div class="slide-counter">10 / 12</div>
+  <div class="section-label">Business Model + Unit Economics</div>
+  <h2>$69 a container. <span class="highlight">$1.15 a day.</span></h2>
+  <p>Direct-to-consumer subscription, one container every two months. Tiered pricing with a Founder's Price for the first 500 customers. The Send a Signal mechanic turns the brand verb into a permanent, measurable growth engine.</p>
+
+  <table style="margin-top: 32px;">
+    <tr><th>Tier</th><th>Price</th><th>Per day</th><th>Notes</th></tr>
+    <tr><td><strong>Founder's Price</strong> (first 500)</td><td>$49 / container</td><td>$0.82</td><td>Locks in lifetime price. Closes at customer 500.</td></tr>
+    <tr><td><strong>Subscriber default</strong></td><td>$59 / container</td><td>$0.98</td><td>Auto-ship every two months. Pause/skip anytime.</td></tr>
+    <tr><td><strong>One-time</strong></td><td>$69 / container</td><td>$1.15</td><td>Trial purchase or non-subscriber repeat.</td></tr>
+    <tr><td><strong>Send a Signal</strong> (non-subscriber)</td><td>$5 / send</td><td>&mdash;</td><td>Launch classic: pay $5, two packets ship (1 to friend, 1 to sender). Net ~&minus;$0.55/send, absorbed as CAC substitute.</td></tr>
+    <tr><td><strong>Send a Signal</strong> (subscriber, permanent)</td><td>$5 / send</td><td>&mdash;</td><td>Subscriber pays $5, one packet ships to a new recipient. Net ~+$2.00/send. <strong>Permanent feature, not a campaign.</strong></td></tr>
+  </table>
+
+  <h3 style="margin-top: 40px;">Target unit economics at month 12</h3>
+  <div class="card-grid" style="grid-template-columns: repeat(4, 1fr); margin-top: 16px;">
+    <div class="card">
+      <div class="card-label">Gross Margin</div>
+      <div class="big-stat" style="font-size: 56px;">~60%</div>
+      <p style="margin-top: 8px;">At scale, after CMO pricing normalizes from MOQ rates.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">LTV</div>
+      <div class="big-stat" style="font-size: 56px;">~$120</div>
+      <p style="margin-top: 8px;">At 6-month retention. Rises to $240+ at 12-month.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Net CAC</div>
+      <div class="big-stat" style="font-size: 56px;">$0&ndash;$2</div>
+      <p style="margin-top: 8px;">Via Send a Signal vs. $25&ndash;$50 paid social CAC for comp brands.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Daily use target</div>
+      <div class="big-stat" style="font-size: 56px;">70%+</div>
+      <p style="margin-top: 8px;">By month 3 of beta. Grüns won on 80%. This is the one metric that decides exit multiple.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px;"><span class="highlight">Numbers are directional estimates pending CMO COGS validation and 3PL shipping quotes.</span> The pilot study budget (slide 12) closes the clinical-efficacy gate before we commit to scale spend.</p>
+</section>
+
+
+<!-- ==================== 11 • THE TEAM ==================== -->
+<section class="slide slide-dark">
+  <div class="slide-counter" style="color: var(--rose-linen);">11 / 12</div>
+  <div class="section-label">The Team</div>
+  <h2>Founders, advisors, <span class="highlight">distribution.</span></h2>
+  <p>Team is locked in principle with formal documentation pending attorney review. Founders' MOU drafted. Equity splits and SAFE structure are draft-stage and part of the legal allocation in the Ask.</p>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr; margin-top: 40px;">
+    <div class="card">
+      <div class="card-label">CEO &middot; co-founder</div>
+      <h4>Damon Sun</h4>
+      <p>Concept origination, brand architecture, formulation direction, fundraising lead. Wellness/health entrepreneurship background. Owns the thesis end-to-end.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">COO &middot; co-founder</div>
+      <h4>Gabby</h4>
+      <p>Operations, manufacturing relationships, supply chain, day-to-day execution. The ops counterweight to the brand/strategy lead.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Investor + co-founder</div>
+      <h4>Vanness Wu</h4>
+      <p>Asian celebrity audience reach (Taiwan, China, broader APAC). Investor capital + co-founder commitment. Anchor for the cross-border distribution story. Participation pending formal SAFE + co-founder agreement.</p>
+    </div>
+    <div class="card">
+      <div class="card-label">Advisor</div>
+      <h4>Frank</h4>
+      <p>Runs GNC Taiwan full-time. Supplement-industry category expertise + retail/distribution access in the same APAC market signal targets for cross-border launch. Frank and Vanness are the two halves of the Asia arc.</p>
+    </div>
+  </div>
+
+  <p style="margin-top: 32px; max-width: 860px;">What's built: thesis, formulation spec, 17-slide concept deck with 16 appendices, brand identity, brand teaser, waitlist landing, 8-SKU platform roadmap, Moat Defense (A16) appendix, trademark research (Class 5), patent strategy. What's needed: signed SAFEs, CMO selection, pilot study kickoff, formal founders' docs. The round closes that list.</p>
+</section>
+
+
+<!-- ==================== 12 • THE ASK ==================== -->
+<section class="slide">
+  <div class="slide-counter">12 / 12</div>
+  <div class="section-label">The Ask</div>
+  <h2>$500K&ndash;$1M SAFE. <span class="highlight">Concept to launch in 12 months.</span></h2>
+  <p>Targeting a small round of aligned investors: beauty-from-within operators, longevity-adjacent capital, and strategic celebrity/audience capital. Use of funds maps to a $395K&ndash;$820K cost base with cushion.</p>
+
+  <table style="margin-top: 24px;">
+    <tr><th>Category</th><th>Range</th><th>Purpose</th></tr>
+    <tr><td>Formulation R&amp;D + taste testing</td><td>$50K&ndash;$100K</td><td>Confection lab partnership, 3&ndash;5 rounds of blind taste testing</td></tr>
+    <tr><td>Pilot human clinical study</td><td>$40K&ndash;$80K</td><td>Moves Efficacy gate to PASS. Randomized, placebo-controlled, 12 weeks. Unlocks "clinically tested" claim.</td></tr>
+    <tr><td>Provisional + design patents</td><td>$5K&ndash;$10K</td><td>Defensive priority date on format. Not pitched as moat.</td></tr>
+    <tr><td>First production run (MOQ)</td><td>$60K&ndash;$150K</td><td>Initial inventory for DTC launch + Amazon seeding</td></tr>
+    <tr><td>Packaging production</td><td>$30K&ndash;$60K</td><td>Matte Signal front + clear back packets + Deep Evening containers</td></tr>
+    <tr><td>Brand + website + creative</td><td>$25K&ndash;$50K</td><td>Landing page, email flows, hero creative, packaging renders</td></tr>
+    <tr><td>Founder runway (6&ndash;12 months)</td><td>$120K&ndash;$240K</td><td>CEO + COO salaries, concept-to-launch period</td></tr>
+    <tr><td>Legal, incorporation, advisors</td><td>$15K&ndash;$30K</td><td>Founders' docs, CMO MSAs, claims review, regulatory</td></tr>
+    <tr><td>Operations, tooling, buffer</td><td>$50K&ndash;$100K</td><td>Accounting, banking, insurance, 3PL, unexpected</td></tr>
+    <tr><td><strong>Total</strong></td><td><strong>$395K&ndash;$820K</strong></td><td><strong>Maps to $500K&ndash;$1M round with cushion</strong></td></tr>
+  </table>
+
+  <div class="vanness-box">
+    <div class="vanness-label">A note to Vanness &mdash; our first check</div>
+    <h4>Your check closes the round and anchors the Asia arc.</h4>
+    <p>You are not an investor at the end of a list. You are the first name on the cap table &mdash; co-founder equity, first SAFE, and the reason the Asia distribution story is credible from day one. Frank runs GNC Taiwan; you have the audience. Those two facts, together, are why a Unilever-shaped exit is plausible rather than aspirational.</p>
+    <p style="margin-top: 16px;">We're not asking you to pick a supplement. We're asking you to co-found the first brand to plant cellular energy as the foundation of beauty-from-within &mdash; a category Unilever just paid $1.2B to enter. You get a stake in the thesis, the platform, and the launch market where your audience already lives.</p>
+    <div class="signature-line">one chew. eight cell types. one exit story.</div>
+  </div>
+
+  <div style="margin-top: 48px; padding-top: 40px; border-top: 1px solid rgba(26,20,16,0.12);">
+    <div style="font-family: var(--font-editorial); font-size: 13px; letter-spacing: 4px; text-transform: uppercase; color: var(--signal); opacity: 0.7; margin-bottom: 12px;">Next step</div>
+    <a href="mailto:damon.sun@insdrwellness.com?subject=signal%20investor%20memo%20%E2%80%94%20reply" style="display: inline-block; font-family: var(--font-display); font-size: 48px; line-height: 1.05; color: var(--signal); text-decoration: none; font-weight: 900; letter-spacing: -1.5px; text-transform: lowercase; margin-bottom: 16px; border-bottom: 3px solid var(--signal); padding-bottom: 4px;">
+      reply to damon &rarr;
+    </a>
+    <div style="font-family: var(--font-body); font-size: 15px; color: var(--deep-evening); opacity: 0.7; max-width: 720px; line-height: 1.6;">
+      damon.sun@insdrwellness.com &middot; Full concept deck + 16 appendices available on request (v5 at notjustwellness.github.io/signal-deck/). Every claim in this memo has its receipt there. This memo is confidential and intended only for the named recipient.
+    </div>
+  </div>
+</section>
+
+
+<img src="signal_packet_float.png" alt="" class="floating-packet" id="floatingPacket" aria-hidden="true">
+<script>
+  (function() {
+    if (window.matchMedia('(max-width: 768px)').matches) return;
+    if (window.matchMedia('(hover: none)').matches) return;
+    const packet = document.getElementById('floatingPacket');
+    if (!packet) return;
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+    const setDefault = () => {
+      tx = window.innerWidth * 0.85; ty = window.innerHeight * 0.82;
+      cx = tx; cy = ty;
+      packet.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+    };
+    setDefault();
+    document.addEventListener('mousemove', (e) => {
+      tx = e.clientX + 70; ty = e.clientY + 60;
+      if (!raf) animate();
+    });
+    const animate = () => {
+      cx += (tx - cx) * 0.09; cy += (ty - cy) * 0.09;
+      packet.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+      if (Math.abs(tx - cx) > 0.3 || Math.abs(ty - cy) > 0.3) raf = requestAnimationFrame(animate);
+      else raf = null;
+    };
+    window.addEventListener('resize', setDefault);
+  })();
+</script>
+</body>
+</html>
