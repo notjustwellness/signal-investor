@@ -66,20 +66,27 @@
 
   /* Shockwave animation */
   .shockwaves { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center; }
-  .wave { position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; margin-top: -30px; margin-left: -30px; border: 1.5px solid #e85a4c; border-radius: 50%; opacity: 0; animation: shockwave 9s cubic-bezier(0.2, 0.7, 0.3, 1) infinite; will-change: transform, opacity; box-shadow: 0 0 30px rgba(232,90,76,0.6), inset 0 0 15px rgba(232,90,76,0.3); }
+  .wave { position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; margin-top: -30px; margin-left: -30px; border: 1.5px solid #e85a4c; border-radius: 50%; opacity: 0; animation: shockwave 10s cubic-bezier(0.2, 0.7, 0.3, 1) infinite; will-change: transform, opacity; box-shadow: 0 0 30px rgba(232,90,76,0.6), inset 0 0 15px rgba(232,90,76,0.3); }
   .wave-1 { animation-delay: 0s; }
-  .wave-2 { animation-delay: 1.5s; }
-  .wave-3 { animation-delay: 3.0s; }
-  .wave-4 { animation-delay: 4.5s; }
-  .wave-5 { animation-delay: 6.0s; }
-  .wave-6 { animation-delay: 7.5s; }
+  .wave-2 { animation-delay: 2.5s; }
+  .wave-3 { animation-delay: 5.0s; }
+  .wave-4 { animation-delay: 7.5s; }
   @keyframes shockwave {
     0% { transform: scale(0.2); opacity: 0; border-width: 2px; }
     8% { opacity: 0.85; }
     100% { transform: scale(28); opacity: 0; border-width: 0.5px; }
   }
-  @media (prefers-reduced-motion: reduce) { .wave { display: none; } }
-  @media print { .shockwaves { display: none !important; } }
+  .anchor-dot { position: absolute; top: 50%; left: 50%; width: 36px; height: 36px; margin-top: -18px; margin-left: -18px; border-radius: 50%; background: radial-gradient(circle, rgba(232,90,76,1) 0%, rgba(232,90,76,0.55) 45%, transparent 75%); opacity: 0; pointer-events: none; z-index: 0; will-change: transform, opacity; }
+  .anchor-dot.flashing { animation: anchor-pulse 1.6s cubic-bezier(0.1, 0.7, 0.3, 1) forwards; }
+  @keyframes anchor-pulse {
+    0%, 13.75% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    14% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    22% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.15); }
+    85% { opacity: 0.18; transform: translate(-50%, -50%) scale(1.0); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
+  @media (prefers-reduced-motion: reduce) { .wave, .anchor-dot { display: none; } }
+  @media print { .shockwaves, .anchor-dot { display: none !important; } }
 
   .cover-overline { font-family: var(--font-body); font-size: 18px; color: var(--rose-linen); font-weight: 300; letter-spacing: 2px; opacity: 0.75; margin-bottom: 8px; position: relative; z-index: 1; text-transform: lowercase; }
   .cover h1 { font-family: var(--font-display); font-size: 140px; font-weight: 900; color: var(--signal); letter-spacing: -2px; line-height: 0.9; position: relative; z-index: 1; text-transform: lowercase; }
@@ -216,9 +223,8 @@
     <div class="wave wave-2"></div>
     <div class="wave wave-3"></div>
     <div class="wave wave-4"></div>
-    <div class="wave wave-5"></div>
-    <div class="wave wave-6"></div>
   </div>
+  <div class="anchor-dot" aria-hidden="true"></div>
   <div class="cover-overline">send the right</div>
   <h1 aria-label="signal" style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; font-size: 100px; letter-spacing: -3px;"><span style="color: var(--rose-linen);">/</span>sɪɡ<span style="color: var(--rose-linen);">ˈ</span>nɑ<span style="color: var(--rose-linen);">ː</span>l<span style="color: var(--rose-linen);">/</span></h1>
   <div class="tagline">the signal your cells are waiting for.</div>
@@ -423,7 +429,7 @@
     <tr><td><strong>02</strong></td><td><strong>Energy thesis</strong> &mdash; cellular energy as platform foundation. No other beauty-from-within brand has claimed this.</td><td><strong>Uncopyable in narrative</strong></td></tr>
     <tr><td><strong>03</strong></td><td><strong>Formulation architecture</strong> &mdash; every SKU carries a machinery-protection keystone chosen for the tissue. AstaZine&reg; astaxanthin (glow/surge/guard); Kaneka QH&reg; Ubiquinol (rise/edge/move); MitoPrime&trade; Ergothioneine (rest/still). Best-fit per biology.</td><td>Three supplier-relationship axes + architecture-as-narrative</td></tr>
     <tr><td><strong>04</strong></td><td><strong>Sensory ritual</strong> &mdash; 90-second multi-sensory experience with felt-feedback receipt</td><td>Impossible without format change</td></tr>
-    <tr><td><strong>05</strong></td><td><strong>Celebrity cap table</strong> &mdash; Vanness Wu + Asia audience reach</td><td><strong>Uncopyable</strong></td></tr>
+    <tr><td><strong>05</strong></td><td><strong>Co-founder + APAC-intro source</strong> &mdash; Vanness Wu on the cap table (non-capital co-founder 2026-04-18 PM) with Asia audience reach + APAC-intro network. Not the face of the brand; the Ryan Reynolds / Aviation Gin model.</td><td><strong>Uncopyable</strong></td></tr>
     <tr><td><strong>06</strong></td><td><strong>First-mover partnerships</strong> &mdash; longevity-adjacent (Mitopure, Novos, Ritual) + electrolyte-adjacent (LMNT, Hydrant) co-marketing</td><td>Contractually locked 12&ndash;24 months</td></tr>
     <tr><td><strong>07</strong></td><td><strong>Platform architecture</strong> &mdash; 8 SKUs, 8 cell types, ONE biological foundation</td><td>12&ndash;24 months &mdash; can't be retroactively unified</td></tr>
     <tr><td><strong>08</strong></td><td><strong>Asia distribution</strong> &mdash; cross-border e-commerce via Vanness's network + Frank's GNC Taiwan category expertise</td><td><strong>Uncopyable</strong></td></tr>
@@ -682,7 +688,7 @@
     <div class="card">
       <div class="card-label">Investor + co-founder</div>
       <h4>Vanness Wu</h4>
-      <p>Asian celebrity audience reach (Taiwan, China, broader APAC). Investor capital + co-founder commitment. Anchor for the cross-border distribution story. Participation pending formal SAFE + co-founder agreement.</p>
+      <p>Asian celebrity audience reach (Taiwan, China, broader APAC). Non-capital co-founder + APAC-intro source + brand amplifier (updated 2026-04-18 PM — SAFE pursuit cancelled; co-founder role preserved without capital layer). Anchor for the cross-border distribution story. Participation formalized via revised Founders' MOU pending legal engagement.</p>
     </div>
     <div class="card">
       <div class="card-label">Advisor</div>
@@ -713,7 +719,7 @@
       <div style="font-family: var(--font-body); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--signal-light); font-weight: 700; margin-bottom: 12px;">In motion &middot; now</div>
       <ul style="list-style: none; padding: 0; margin: 0; font-size: 14.5px; line-height: 1.85;">
         <li>&middot; Founders' MOU drafted, pending attorney review</li>
-        <li>&middot; Vanness SAFE + co-founder agreement structuring</li>
+        <li>&middot; Revised Founders' MOU formalizing Vanness as non-capital co-founder + APAC-intro source</li>
         <li>&middot; Zone Halo formulation engagement confirmed ($10K/SKU = $80K, 8-SKU platform)</li>
         <li>&middot; Provisional patent filing prep</li>
         <li>&middot; Send a Signal beta tester list building</li>
@@ -779,28 +785,37 @@
 <section class="slide">
   <div class="slide-counter">13 / 13</div>
   <div class="section-label">The Ask</div>
-  <h2>$500K&ndash;$1M SAFE. <span class="highlight">Concept to launch in 12 months.</span></h2>
-  <p>Targeting a small round of aligned investors: beauty-from-within operators, longevity-adjacent capital, and strategic celebrity/audience capital. Use of funds maps to a $395K&ndash;$820K cost base with cushion.</p>
+  <h2>Bootstrap-first. <span class="highlight">F&amp;F round after retention-proof.</span></h2>
+  <p>signal is pursuing a revenue-first bootstrap at launch &mdash; not an anchor-investor SAFE. The CEO self-funds the minimum viable bootstrap; early revenue funds growth. Once retention metrics prove the habit hypothesis (target: 70%+ daily-use at month 3 of beta, per the Gr&uuml;ns playbook), we open a small friends-and-family round to accelerate. Institutional pre-seed / seed rounds are deferred until F&amp;F + retention signal warrant them.</p>
 
-  <table style="margin-top: 24px;">
+  <h3 style="margin-top: 32px;">Phase 1 &mdash; bootstrap launch (glow-only, rise + rest teased)</h3>
+  <table style="margin-top: 16px;">
     <tr><th>Category</th><th>Range</th><th>Purpose</th></tr>
-    <tr><td>Formulation R&amp;D + taste testing</td><td>$50K&ndash;$100K</td><td>Confection lab partnership, 3&ndash;5 rounds of blind taste testing</td></tr>
-    <tr><td>Pilot human clinical study</td><td>$40K&ndash;$80K</td><td>Moves Efficacy gate to PASS. Randomized, placebo-controlled, 12 weeks. Unlocks "clinically tested" claim.</td></tr>
-    <tr><td>Provisional + design patents</td><td>$5K&ndash;$10K</td><td>Defensive priority date on format. Not pitched as moat.</td></tr>
-    <tr><td>First production run (MOQ)</td><td>$60K&ndash;$150K</td><td>Initial inventory for DTC launch + Amazon seeding</td></tr>
-    <tr><td>Packaging production</td><td>$30K&ndash;$60K</td><td>Matte Signal front + clear back packets + Deep Evening containers</td></tr>
-    <tr><td>Brand + website + creative</td><td>$25K&ndash;$50K</td><td>Landing page, email flows, hero creative, packaging renders</td></tr>
-    <tr><td>Founder runway (6&ndash;12 months)</td><td>$120K&ndash;$240K</td><td>CEO + COO salaries, concept-to-launch period</td></tr>
-    <tr><td>Legal, incorporation, advisors</td><td>$15K&ndash;$30K</td><td>Founders' docs, CMO MSAs, claims review, regulatory</td></tr>
-    <tr><td>Operations, tooling, buffer</td><td>$50K&ndash;$100K</td><td>Accounting, banking, insurance, 3PL, unexpected</td></tr>
-    <tr><td><strong>Total</strong></td><td><strong>$395K&ndash;$820K</strong></td><td><strong>Maps to $500K&ndash;$1M round with cushion</strong></td></tr>
+    <tr><td>Zone Halo formulation (glow only)</td><td>$10K</td><td>One SKU at launch, $10K/SKU confirmed. Additional SKUs post-retention.</td></tr>
+    <tr><td>Provisional + design patents</td><td>$8K&ndash;$10K</td><td>Defensive priority date on format. Not pitched as moat.</td></tr>
+    <tr><td>Incorporation + legal</td><td>$5K&ndash;$10K</td><td>Founders' docs, CMO MSA, claims review, regulatory</td></tr>
+    <tr><td>First production run (small MOQ)</td><td>$15K&ndash;$30K</td><td>5&ndash;10K packets initial inventory for DTC launch</td></tr>
+    <tr><td>Packaging + branding assets</td><td>$5K&ndash;$10K</td><td>Matte Signal front + clear back packets; landing page refresh</td></tr>
+    <tr><td>Pre-launch marketing (organic-first)</td><td>$0&ndash;$10K</td><td>TikTok-native, owned-channel. No paid anchor.</td></tr>
+    <tr><td>Founder compensation</td><td>$0</td><td>Delayed until post-retention / F&amp;F round</td></tr>
+    <tr><td><strong>Phase 1 bootstrap total</strong></td><td><strong>$43K&ndash;$80K</strong></td><td><strong>CEO self-funded (source + exact amount TBD)</strong></td></tr>
+  </table>
+
+  <h3 style="margin-top: 40px;">Phase 2 &mdash; F&amp;F round (conditional on retention trigger)</h3>
+  <table style="margin-top: 16px;">
+    <tr><th>Category</th><th>Range</th><th>Purpose</th></tr>
+    <tr><td>F&amp;F check size</td><td>$25K&ndash;$100K per participant</td><td>3&ndash;5 participants = $150K&ndash;$400K total</td></tr>
+    <tr><td>Remaining 7-SKU platform (Zone Halo)</td><td>$70K</td><td>Rise, rest, surge, edge, still, guard, move formulations</td></tr>
+    <tr><td>Production scale-up</td><td>$60K&ndash;$150K</td><td>Expanded inventory to match habit-validated demand</td></tr>
+    <tr><td>Founder runway + first ops hire</td><td>Remainder</td><td>CEO + COO salaries start post-F&amp;F; supplement-ops hire per Gr&uuml;ns-shaped opportunity Step 5</td></tr>
+    <tr><td><strong>Phase 2 trigger</strong></td><td colspan="2"><strong>70%+ daily-use rate at M3 of beta + 500+ paying subscribers + retention curves tracking toward Gr&uuml;ns benchmark</strong></td></tr>
   </table>
 
   <div class="vanness-box">
-    <div class="vanness-label">A note to Vanness &mdash; our first check</div>
-    <h4>Your check closes the round and anchors the Asia arc.</h4>
-    <p>You are not an investor at the end of a list. You are the first name on the cap table &mdash; co-founder equity, first SAFE, and the reason the Asia distribution story is credible from day one. Frank runs GNC Taiwan; you have the audience. Those two facts, together, are why a Unilever-shaped exit is plausible rather than aspirational.</p>
-    <p style="margin-top: 16px;">We're not asking you to pick a supplement. We're asking you to co-found the first brand to plant cellular energy as the foundation of beauty-from-within &mdash; a category Unilever just paid $1.2B to enter. You get a stake in the thesis, the platform, and the launch market where your audience already lives.</p>
+    <div class="vanness-label">A note on co-founder structure</div>
+    <h4>Vanness Wu is a non-capital co-founder + APAC-intro source.</h4>
+    <p>Updated 2026-04-18: the earlier $200-250K SAFE anchor pursuit is cancelled. Vanness participates as a co-founder (equity grant, percentage pending legal) + APAC-intro source + social amplifier. No capital contribution at incorporation. The Asia arc stays load-bearing &mdash; Vanness's network is the primary APAC-intro lever when signal is cross-border ready &mdash; but it's now structured as a co-founder relationship, not an investor relationship.</p>
+    <p style="margin-top: 16px;">This shift aligns capital strategy with the Gr&uuml;ns $1.2B playbook: habit metrics prove the product, brand + retention close the round. We don't raise on concept; we raise on proof. F&amp;F triggers when habit trigger fires, not before.</p>
     <div class="signature-line">one chew. eight cell types. one exit story.</div>
   </div>
 
@@ -860,43 +875,95 @@
 </script>
 
 <script>
-  /* Sonar-ping engine — synthesized Web Audio submarine tone synced to cover shockwaves (1.5s) */
+  /* Sonar-ping engine — A-tuned: every ping lands on A4 (440 Hz), descending perfect-5th sweep, anchor resonance, 2.5s cadence synced to shockwaves */
   (function() {
     let audioCtx = null;
     let pingInterval = null;
     let isMuted = sessionStorage.getItem('signal_ping_muted') === 'true';
     let hasGesture = false;
     let coverInView = false;
+    const LANDING = 440, INTERVAL_RATIO = 1.5, ANCHOR_RING = 1.2, PING_RATE_MS = 2500;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) isMuted = true;
     function getCtx() {
       if (!audioCtx) { try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
       return audioCtx;
+    }
+    function flashAnchorDot() {
+      const dot = document.querySelector('.anchor-dot');
+      if (!dot) return;
+      dot.classList.remove('flashing');
+      void dot.offsetWidth;
+      dot.classList.add('flashing');
     }
     function playPing() {
       if (isMuted) return;
       const ctx = getCtx(); if (!ctx) return;
       if (ctx.state === 'suspended') ctx.resume();
       const t = ctx.currentTime;
+      const start = LANDING * INTERVAL_RATIO;
+      const mid = LANDING + (start - LANDING) * 0.4;
+      const merger = ctx.createChannelMerger(2);
+      const panL = ctx.createGain(), panR = ctx.createGain();
+      panL.gain.setValueAtTime(1.0, t); panL.gain.linearRampToValueAtTime(0.85, t + 0.22);
+      panR.gain.setValueAtTime(0.78, t); panR.gain.linearRampToValueAtTime(0.85, t + 0.22);
+      panL.connect(merger, 0, 0); panR.connect(merger, 0, 1);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass'; filter.frequency.value = 2600; filter.Q.value = 1.05;
+      merger.connect(filter); filter.connect(ctx.destination);
       const osc = ctx.createOscillator();
       osc.type = 'sine';
-      osc.frequency.setValueAtTime(900, t);
-      osc.frequency.exponentialRampToValueAtTime(340, t + 0.28);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, t);
-      gain.gain.linearRampToValueAtTime(0.14, t + 0.01);
-      gain.gain.linearRampToValueAtTime(0.085, t + 0.08);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.95);
-      const filter = ctx.createBiquadFilter();
-      filter.type = 'lowpass'; filter.frequency.value = 2400; filter.Q.value = 1.05;
-      osc.connect(gain); gain.connect(filter); filter.connect(ctx.destination);
-      [[0.17, 0.38], [0.34, 0.22], [0.58, 0.12]].forEach(([dt, dg]) => {
-        const d = ctx.createDelay(2); d.delayTime.value = dt;
-        const g = ctx.createGain(); g.gain.value = dg;
-        filter.connect(d); d.connect(g); g.connect(ctx.destination);
-      });
-      osc.start(t); osc.stop(t + 1.1);
+      osc.frequency.setValueAtTime(start, t);
+      osc.frequency.exponentialRampToValueAtTime(mid, t + 0.04);
+      osc.frequency.exponentialRampToValueAtTime(LANDING, t + 0.22);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.14, t + 0.01);
+      g.gain.linearRampToValueAtTime(0.085, t + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.95);
+      osc.connect(g); g.connect(panL); g.connect(panR);
+      const oscP = ctx.createOscillator();
+      oscP.type = 'sine';
+      oscP.frequency.setValueAtTime(start * 3, t);
+      oscP.frequency.exponentialRampToValueAtTime(mid * 3, t + 0.04);
+      oscP.frequency.exponentialRampToValueAtTime(LANDING * 3, t + 0.22);
+      const gP = ctx.createGain();
+      gP.gain.setValueAtTime(0, t);
+      gP.gain.linearRampToValueAtTime(0.018, t + 0.015);
+      gP.gain.exponentialRampToValueAtTime(0.0005, t + 0.6);
+      oscP.connect(gP); gP.connect(panR);
+      osc.start(t); osc.stop(t + 1.05);
+      oscP.start(t); oscP.stop(t + 0.7);
+      const aStart = t + 0.22;
+      const oscA = ctx.createOscillator();
+      oscA.type = 'sine'; oscA.frequency.value = LANDING;
+      const gA = ctx.createGain();
+      gA.gain.setValueAtTime(0, aStart);
+      gA.gain.linearRampToValueAtTime(0.065, aStart + 0.05);
+      gA.gain.exponentialRampToValueAtTime(0.0001, aStart + ANCHOR_RING);
+      oscA.connect(gA); gA.connect(panL); gA.connect(panR);
+      const adL = ctx.createDelay(3); adL.delayTime.value = 0.41;
+      const adR = ctx.createDelay(3); adR.delayTime.value = 0.62;
+      const adLg = ctx.createGain(); adLg.gain.value = 0.35;
+      const adRg = ctx.createGain(); adRg.gain.value = 0.28;
+      const aMerger = ctx.createChannelMerger(2);
+      gA.connect(adL); adL.connect(adLg); adLg.connect(aMerger, 0, 0);
+      gA.connect(adR); adR.connect(adRg); adRg.connect(aMerger, 0, 1);
+      aMerger.connect(filter);
+      oscA.start(aStart); oscA.stop(aStart + ANCHOR_RING + 0.1);
+      const eL = ctx.createDelay(3); eL.delayTime.value = 0.18;
+      const eLg = ctx.createGain(); eLg.gain.value = 0.32;
+      const eLm = ctx.createChannelMerger(2);
+      filter.connect(eL); eL.connect(eLg); eLg.connect(eLm, 0, 0); eLm.connect(ctx.destination);
+      const eR = ctx.createDelay(3); eR.delayTime.value = 0.35;
+      const eRg = ctx.createGain(); eRg.gain.value = 0.22;
+      const eRm = ctx.createChannelMerger(2);
+      filter.connect(eR); eR.connect(eRg); eRg.connect(eRm, 0, 1); eRm.connect(ctx.destination);
+      const eC = ctx.createDelay(3); eC.delayTime.value = 0.82;
+      const eCg = ctx.createGain(); eCg.gain.value = 0.16;
+      filter.connect(eC); eC.connect(eCg); eCg.connect(ctx.destination);
+      flashAnchorDot();
     }
-    function startLoop() { if (pingInterval || isMuted) return; playPing(); pingInterval = setInterval(playPing, 1500); }
+    function startLoop() { if (pingInterval || isMuted) return; playPing(); pingInterval = setInterval(playPing, PING_RATE_MS); }
     function stopLoop() { if (pingInterval) { clearInterval(pingInterval); pingInterval = null; } }
     function maybeStart() { if (hasGesture && coverInView && !isMuted) startLoop(); }
     const origCheck = window.checkPass;
